@@ -1,0 +1,38 @@
+﻿version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: db_analitica
+    restart: always
+    environment:
+      POSTGRES_DB: analytics_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: jupyter_analitica
+    restart: always
+    environment:
+      JUPYTER_TOKEN: token123
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+
+  web:
+    build: ./web
+    container_name: web_dashboard
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8501:8501"
+
+volumes:
+  pgdata:
